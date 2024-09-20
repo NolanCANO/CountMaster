@@ -1,0 +1,14 @@
+# Configuration de Air pour le projet Go
+
+[build]
+# Commande exécutée à chaque modification
+cmd = "swag init && go build -o ./tmp/main.exe ."
+bin = "./tmp/main.exe"
+full_bin = "./tmp/main.exe"
+# Extensions de fichiers surveillés
+include_ext = ["go", "tpl", "tmpl", "html"]
+# Fichiers ou dossiers exclus
+exclude_dir = ["docs", "tmp"]
+
+[log]
+level = "info"

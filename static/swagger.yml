@@ -1,0 +1,336 @@
+openapi: 3.0.0
+info:
+  title: API de gestion des utilisateurs, groupes et dépenses
+  version: 1.0.0
+  description: Ceci est une API pour gérer les utilisateurs, les groupes, et les dépenses.
+
+servers:
+  - url: http://localhost:8080
+    description: Serveur local
+
+paths:
+  /users:
+    get:
+      summary: Récupérer la liste des utilisateurs
+      description: Obtenir tous les utilisateurs enregistrés.
+      tags:
+        - Users
+      responses:
+        '200':
+          description: Liste des utilisateurs récupérée avec succès
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+    post:
+      summary: Créer un nouvel utilisateur
+      description: Ajouter un utilisateur avec un username et un email
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '201':
+          description: Utilisateur créé avec succès
+        '400':
+          description: Mauvaise requête (informations manquantes ou invalides)
+
+  /users/{id}:
+    get:
+      summary: Récupérer un utilisateur par ID
+      description: Obtenir les informations d'un utilisateur spécifique.
+      tags:
+        - Users
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Utilisateur récupéré avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: Utilisateur non trouvé
+    put:
+      summary: Mettre à jour un utilisateur
+      description: Mettre à jour les informations d'un utilisateur.
+      tags:
+        - Users
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: Utilisateur mis à jour avec succès
+        '404':
+          description: Utilisateur non trouvé
+    delete:
+      summary: Supprimer un utilisateur
+      description: Supprimer un utilisateur par son ID.
+      tags:
+        - Users
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Utilisateur supprimé avec succès
+        '404':
+          description: Utilisateur non trouvé
+
+  /groups:
+    post:
+      summary: Créer un nouveau groupe
+      description: Ajouter un groupe avec un nom et un créateur (utilisateur). Le créateur doit exister dans la base de données.
+      tags:
+        - Groups
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Group'
+      responses:
+        '201':
+          description: Groupe créé avec succès
+        '400':
+          description: L'utilisateur créateur n'existe pas ou les données d'entrée sont invalides
+    get:
+      summary: Récupérer la liste des groupes
+      description: Obtenir tous les groupes enregistrés.
+      tags:
+        - Groups
+      responses:
+        '200':
+          description: Liste des groupes récupérée avec succès
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Group'
+
+  /groups/{id}:
+    get:
+      summary: Récupérer un groupe par ID
+      description: Obtenir les informations d'un groupe spécifique.
+      tags:
+        - Groups
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Groupe récupéré avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Group'
+        '404':
+          description: Groupe non trouvé
+    put:
+      summary: Mettre à jour un groupe
+      description: Mettre à jour les informations d'un groupe.
+      tags:
+        - Groups
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Group'
+      responses:
+        '200':
+          description: Groupe mis à jour avec succès
+        '404':
+          description: Groupe non trouvé
+    delete:
+      summary: Supprimer un groupe
+      description: Supprimer un groupe par son ID.
+      tags:
+        - Groups
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Groupe supprimé avec succès
+        '404':
+          description: Groupe non trouvé
+
+  /users/{id}/groups:
+    get:
+      summary: Récupérer les groupes d'un utilisateur
+      description: Obtenir tous les groupes associés à un utilisateur spécifique.
+      tags:
+        - Groups
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Groupes récupérés avec succès
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Group'
+        '404':
+          description: Utilisateur ou groupes non trouvés
+
+  /depenses:
+    post:
+      summary: Créer une nouvelle dépense
+      description: Ajouter une dépense à un groupe spécifique.
+      tags:
+        - Depenses
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Depense'
+      responses:
+        '201':
+          description: Dépense créée avec succès
+        '400':
+          description: Mauvaise requête (informations manquantes ou invalides)
+
+  /depenses/{id}:
+    get:
+      summary: Récupérer une dépense par ID
+      description: Obtenir les informations d'une dépense spécifique.
+      tags:
+        - Depenses
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Dépense récupérée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Depense'
+        '404':
+          description: Dépense non trouvée
+    put:
+      summary: Mettre à jour une dépense
+      description: Mettre à jour les informations d'une dépense.
+      tags:
+        - Depenses
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Depense'
+      responses:
+        '200':
+          description: Dépense mise à jour avec succès
+        '404':
+          description: Dépense non trouvée
+    delete:
+      summary: Supprimer une dépense
+      description: Supprimer une dépense par son ID.
+      tags:
+        - Depenses
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Dépense supprimée avec succès
+        '404':
+          description: Dépense non trouvée
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        email:
+          type: string
+
+    Group:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        creator_id:
+          type: integer
+        share_by_salary:
+          type: boolean
+
+    Depense:
+      type: object
+      properties:
+        id:
+          type: integer
+        group_id:
+          type: integer
+        payer_id:
+          type: integer
+        amount:
+          type: number
+        description:
+          type: string

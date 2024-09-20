@@ -1,0 +1,9 @@
+basePath: /
+host: localhost:8080
+info:
+  contact: {}
+  description: Ceci est une API pour gérer les utilisateurs.
+  title: API de gestion des utilisateurs
+  version: "1.0"
+paths: {}
+swagger: "2.0"
