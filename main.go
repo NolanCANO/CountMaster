@@ -2,6 +2,7 @@ package main
 
 import (
     "CountMaster/controllers"
+    "CountMaster/middleware"
     "CountMaster/models"
     "CountMaster/repositories"
     "CountMaster/services"
@@ -53,41 +54,52 @@ func main() {
     settlementService := services.NewSettlementService(settlementRepo)
     settlementController := controllers.NewSettlementController(settlementService)
 
+    // Initialisation du controller d'authentification
+    authController := controllers.NewAuthController(userService)
+
     router := gin.Default()
 
-    // Routes pour les utilisateurs (Users)
+    // Route de création d'utilisateur (ne nécessite pas de token)
     router.POST("/users", userController.CreateUser)
-    router.GET("/users", userController.GetUsers)
-    router.GET("/users/:id", userController.GetUserByID)
-    router.PUT("/users/:id", userController.UpdateUser)
-    router.DELETE("/users/:id", userController.DeleteUser)
+    
+    // Route de login (pour obtenir un token JWT)
+    router.POST("/login", authController.Login)
 
-    // Routes pour les groupes (Groups)
-    router.POST("/groups", groupController.CreateGroup)
-    router.GET("/groups", groupController.GetGroups)
-    router.GET("/groups/:id", groupController.GetGroupByID)
-    router.GET("/users/:id/groups", groupController.GetGroupsByUserID)
-    router.PUT("/groups/:id", groupController.UpdateGroup)
-    router.DELETE("/groups/:id", groupController.DeleteGroup)
+    // Groupe de routes protégées par le middleware JWT
+    protected := router.Group("/")
+    protected.Use(middleware.AuthMiddleware()) // <- Middleware ajouté ici
 
-    // Routes pour les dépenses (Depenses)
-    router.POST("/depenses", depenseController.CreateDepense)
-    router.GET("/depenses/:id", depenseController.GetDepenseByID)
-    router.PUT("/depenses/:id", depenseController.UpdateDepense)
-    router.DELETE("/depenses/:id", depenseController.DeleteDepense)
+    // Routes pour les utilisateurs (Users) protégées par le middleware JWT
+    protected.GET("/users", userController.GetUsers)
+    protected.GET("/users/:id", userController.GetUserByID)
+    protected.PUT("/users/:id", userController.UpdateUser)
+    protected.DELETE("/users/:id", userController.DeleteUser)
 
-    // Routes pour les parts de dépenses (DepenseShares)
-    router.POST("/depenses/:id/shares", depenseShareController.CreateDepenseShare)
-    router.GET("/depenses/:id/shares", depenseShareController.GetDepenseShareByID)
-    router.PUT("/depenses/:id/shares/:user_id", depenseShareController.UpdateDepenseShare)
-    router.DELETE("/depenses/:id/shares/:user_id", depenseShareController.DeleteDepenseShare)
+    // Routes pour les groupes (Groups) protégées par le middleware JWT
+    protected.POST("/groups", groupController.CreateGroup)
+    protected.GET("/groups", groupController.GetGroups)
+    protected.GET("/groups/:id", groupController.GetGroupByID)
+    protected.GET("/users/:id/groups", groupController.GetGroupsByUserID)
+    protected.PUT("/groups/:id", groupController.UpdateGroup)
+    protected.DELETE("/groups/:id", groupController.DeleteGroup)
 
-    // Routes pour les règlements (Settlements)
-    router.POST("/settlements", settlementController.CreateSettlement)
-    router.PUT("/settlements/:id/settle", settlementController.SettlePayment)
-    router.GET("/settlements/group/:group_id", settlementController.GetSettlementsByGroup)
-    router.GET("/settlements/user/:user_id", settlementController.GetSettlementsByUser)
+    // Routes pour les dépenses (Depenses) protégées par le middleware JWT
+    protected.POST("/depenses", depenseController.CreateDepense)
+    protected.GET("/depenses/:id", depenseController.GetDepenseByID)
+    protected.PUT("/depenses/:id", depenseController.UpdateDepense)
+    protected.DELETE("/depenses/:id", depenseController.DeleteDepense)
 
+    // Routes pour les parts de dépenses (DepenseShares) protégées par le middleware JWT
+    protected.POST("/depenses/:id/shares", depenseShareController.CreateDepenseShare)
+    protected.GET("/depenses/:id/shares", depenseShareController.GetDepenseShareByID)
+    protected.PUT("/depenses/:id/shares/:user_id", depenseShareController.UpdateDepenseShare)
+    protected.DELETE("/depenses/:id/shares/:user_id", depenseShareController.DeleteDepenseShare)
+
+    // Routes pour les règlements (Settlements) protégées par le middleware JWT
+    protected.POST("/settlements", settlementController.CreateSettlement)
+    protected.PUT("/settlements/:id/settle", settlementController.SettlePayment)
+    protected.GET("/settlements/group/:group_id", settlementController.GetSettlementsByGroup)
+    protected.GET("/settlements/user/:user_id", settlementController.GetSettlementsByUser)
 
     // Servir les fichiers statiques (y compris swagger.yml)
     router.Static("/static", "./static")
