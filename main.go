@@ -48,6 +48,11 @@ func main() {
     depenseShareService := services.NewDepenseShareService(depenseShareRepo)
     depenseShareController := controllers.NewDepenseShareController(depenseShareService)
 
+    // Initialisation des repositories, services et contrôleurs de settlement
+    settlementRepo := repositories.NewSettlementRepository(db)
+    settlementService := services.NewSettlementService(settlementRepo)
+    settlementController := controllers.NewSettlementController(settlementService)
+
     router := gin.Default()
 
     // Routes pour les utilisateurs (Users)
@@ -76,6 +81,13 @@ func main() {
     router.GET("/depenses/:id/shares", depenseShareController.GetDepenseShareByID)
     router.PUT("/depenses/:id/shares/:user_id", depenseShareController.UpdateDepenseShare)
     router.DELETE("/depenses/:id/shares/:user_id", depenseShareController.DeleteDepenseShare)
+
+    // Routes pour les règlements (Settlements)
+    router.POST("/settlements", settlementController.CreateSettlement)
+    router.PUT("/settlements/:id/settle", settlementController.SettlePayment)
+    router.GET("/settlements/group/:group_id", settlementController.GetSettlementsByGroup)
+    router.GET("/settlements/user/:user_id", settlementController.GetSettlementsByUser)
+
 
     // Servir les fichiers statiques (y compris swagger.yml)
     router.Static("/static", "./static")
