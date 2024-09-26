@@ -15,7 +15,7 @@ func NewUserRepository(db *gorm.DB) *UserRepository {
 
 // Créer un utilisateur
 func (r *UserRepository) AddUser(user *models.User) {
-    r.db.Create(user) // Crée un utilisateur avec le mot de passe hashé
+    r.db.Create(user)
 }
 
 // Récupérer tous les utilisateurs
@@ -35,19 +35,9 @@ func (r *UserRepository) GetUserByID(id uint) (*models.User, error) {
     return &user, nil
 }
 
-// Récupérer un utilisateur par nom d'utilisateur
-func (r *UserRepository) GetUserByUsername(username string) (*models.User, error) {
-    var user models.User
-    result := r.db.Where("username = ?", username).First(&user)
-    if result.Error != nil {
-        return nil, result.Error
-    }
-    return &user, nil
-}
-
 // Mettre à jour un utilisateur
 func (r *UserRepository) UpdateUser(user *models.User) {
-    r.db.Save(user) // Met à jour l'utilisateur, y compris le mot de passe s'il est modifié
+    r.db.Save(user)
 }
 
 // Supprimer un utilisateur

@@ -2,7 +2,6 @@ package controllers
 
 import (
     "CountMaster/services"
-    "CountMaster/util"
     "net/http"
     "strconv"
 
@@ -22,7 +21,6 @@ func (c *UserController) CreateUser(ctx *gin.Context) {
     var request struct {
         Username string `json:"username"`
         Email    string `json:"email"`
-        Password string `json:"password"` // Ajouter le mot de passe
     }
 
     if err := ctx.ShouldBindJSON(&request); err != nil {
@@ -30,15 +28,7 @@ func (c *UserController) CreateUser(ctx *gin.Context) {
         return
     }
 
-    // Hasher le mot de passe
-    hashedPassword, err := util.HashPassword(request.Password)
-    if err != nil {
-        ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Could not hash password"})
-        return
-    }
-
-    // Créer l'utilisateur avec le mot de passe hashé
-    user := c.userService.CreateUser(request.Username, request.Email, hashedPassword)
+    user := c.userService.CreateUser(request.Username, request.Email)
     ctx.JSON(http.StatusCreated, user)
 }
 
@@ -76,7 +66,6 @@ func (c *UserController) UpdateUser(ctx *gin.Context) {
     var request struct {
         Username string `json:"username"`
         Email    string `json:"email"`
-        Password string `json:"password"` // Option de mise à jour du mot de passe
     }
 
     if err := ctx.ShouldBindJSON(&request); err != nil {
@@ -84,17 +73,7 @@ func (c *UserController) UpdateUser(ctx *gin.Context) {
         return
     }
 
-    // Si un mot de passe est fourni, le hasher
-    var hashedPassword string
-    if request.Password != "" {
-        hashedPassword, err = util.HashPassword(request.Password)
-        if err != nil {
-            ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Could not hash password"})
-            return
-        }
-    }
-
-    updatedUser, err := c.userService.UpdateUser(uint(id), request.Username, request.Email, hashedPassword)
+    updatedUser, err := c.userService.UpdateUser(uint(id), request.Username, request.Email)
     if err != nil {
         ctx.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
         return

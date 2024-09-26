@@ -13,12 +13,11 @@ func NewUserService(repo *repositories.UserRepository) *UserService {
     return &UserService{repo: repo}
 }
 
-// ajouter un utilisateur avec mot de passe hashé
-func (s *UserService) CreateUser(username, email, passwordHash string) *models.User {
+// ajouter un utilisateur
+func (s *UserService) CreateUser(username, email string) *models.User {
     user := &models.User{
-        Username:     username,
-        Email:        email,
-        PasswordHash: passwordHash, // inclure le mot de passe hashé
+        Username: username,
+        Email:    email,
     }
     s.repo.AddUser(user)
     return user
@@ -34,13 +33,8 @@ func (s *UserService) GetUserByID(id uint) (*models.User, error) {
     return s.repo.GetUserByID(id)
 }
 
-// Récupérer un utilisateur par nom d'utilisateur
-func (s *UserService) GetUserByUsername(username string) (*models.User, error) {
-    return s.repo.GetUserByUsername(username)
-}
-
-// mettre à jour un utilisateur avec possibilité de changer le mot de passe
-func (s *UserService) UpdateUser(id uint, username, email, passwordHash string) (*models.User, error) {
+// mettre à jour un utilisateur
+func (s *UserService) UpdateUser(id uint, username, email string) (*models.User, error) {
     user, err := s.repo.GetUserByID(id)
     if err != nil {
         return nil, err
@@ -48,9 +42,6 @@ func (s *UserService) UpdateUser(id uint, username, email, passwordHash string) 
 
     user.Username = username
     user.Email = email
-    if passwordHash != "" {
-        user.PasswordHash = passwordHash // mettre à jour le mot de passe s'il est fourni
-    }
     s.repo.UpdateUser(user)
     return user, nil
 }
