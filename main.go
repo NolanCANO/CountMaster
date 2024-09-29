@@ -7,7 +7,6 @@ import (
 	"CountMaster/repositories"
 	"CountMaster/services"
 	"log"
-	"os"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -24,7 +23,7 @@ import (
 
 func main() {
 	// Connexion à PostgreSQL via GORM
-	dsn := os.Getenv("DATABASE_URL")
+	dsn := "host=localhost user=postgres password=Canolan82* dbname=countmaster port=5432 sslmode=disable"
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatal("failed to connect to database:", err)
@@ -65,7 +64,7 @@ func main() {
 
 	// Configurer le middleware CORS
 	router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:3000"},         // Autorise les origines spécifiques
+		AllowOrigins:     []string{"*"/*http://localhost:3000*/},         // Autorise les origines spécifiques
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},  // Autorise les méthodes HTTP
 		AllowHeaders:     []string{"Authorization", "Content-Type"}, // Autorise les en-têtes spécifiques
 		ExposeHeaders:    []string{"Authorization"},                 // Expose certains headers au frontend
