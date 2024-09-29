@@ -65,7 +65,7 @@ func main() {
 
 	// Configurer le middleware CORS
 	router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:3000"},         // Autorise les origines spécifiques
+		AllowOrigins:     []string{"*"/*http://localhost:3000*/},         // Autorise les origines spécifiques
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},  // Autorise les méthodes HTTP
 		AllowHeaders:     []string{"Authorization", "Content-Type"}, // Autorise les en-têtes spécifiques
 		ExposeHeaders:    []string{"Authorization"},                 // Expose certains headers au frontend
